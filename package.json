@@ -1,5 +1,5 @@
 {
-  "name": "my-turborepo",
+  "name": "FakeDataBuilder",
   "private": true,
   "scripts": {
     "build": "turbo run build",
