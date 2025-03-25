@@ -1,127 +1,127 @@
 [
   {
     "id": "1jiieu5",
-    "content": "Why does next 15 takes up so much system resource and is still terribly slow?",
+    "content": "<p>Why does next 15 takes up so much system resource and is still terribly slow?</p>\n<p>I am building a next js project.</p>\n<p>It have very minimal modules for the moments only 3-4 cruds</p>\n<p>This is the amount of resource the vscode on running next in dev mode takes</p>\n<p>ref: ehttps://img.enacton.com/ShareX/2025/03/xtJHFq5dL2.png</p>\n<p>any idea why it would be like this?</p>\n<p>I have also disabled most of the ai extensions and not useful extensions as well.</p>\n<p>Also it takes good amount of time to render the page<br>\nRef: <a href=\"https://img.enacton.com/ShareX/2025/03/tWGG0JKfMj.png\">https://img.enacton.com/ShareX/2025/03/tWGG0JKfMj.png</a></p>\n<p>Also the server actions takes a good amount of time to bring the data in dev mode</p>\n<p>ref: <a href=\"https://img.enacton.com/ShareX/2025/03/tJbi0ZF0BW.png\">https://img.enacton.com/ShareX/2025/03/tJbi0ZF0BW.png</a></p>\n<p>These are on local postgress database no server or external database</p>\n<p>Another server action taking good amount of time just to search records in a 10 row table<br>\nRef: <a href=\"https://img.enacton.com/ShareX/2025/03/WRoL3yZ5Fe.png\">https://img.enacton.com/ShareX/2025/03/WRoL3yZ5Fe.png</a></p>\n<p>Is it still too early to use next 15 ?</p>\n",
     "userId": "ThisIsntMyId",
     "timestamp": 1742789567
   },
   {
-    "id": "mjfihmp",
-    "content": "When my Intel Core i3 laptop had 4GB of RAM Next.js would use so many resources that it would log me out of my is (Linux), I guess in Windows would freeze my laptop. Now, with an SSD and 8GB, it's better, but I know it wouldn't be enough for very large projects.\n\nIf you want to use Next.js, you need good hardware.\n\nThe next time you are gonna build something try using React + React Router with Vite, you will notice the difference.",
-    "userId": "gdmr458",
-    "parentId": "1jiieu5",
-    "timestamp": 1742791201
-  },
-  {
-    "id": "mjfj1ye",
-    "content": "Are you using turbopack? Depending on the libraries you're using you might get away with running it. I've had shit luck trying to get it to work despite Vercel saying it's passing like a billion tests. Feels like all those tests are just asserting true. Anyway give it a go if you aren't using it. My pages take 4 seconds to load most times on a 12 core AM5 so 1 second you're getting is pretty good!\n\nhttps://nextjs.org/docs/app/api-reference/turbopack",
-    "userId": "Wild_Committee_342",
-    "parentId": "1jiieu5",
-    "timestamp": 1742791492
-  },
-  {
-    "id": "mjfjw0s",
-    "content": "Yes I'm using turbopack",
-    "userId": "ThisIsntMyId",
-    "parentId": "mjfj1ye",
-    "timestamp": 1742791931
-  },
-  {
-    "id": "mjfm62e",
-    "content": "It's just tons of build processing. I wish js frameworks moved more towards executing the code you write directly.",
-    "userId": "yksvaan",
-    "parentId": "1jiieu5",
-    "timestamp": 1742793180
-  },
-  {
-    "id": "mjfmepf",
-    "content": "I don't have this issue and have multiple next projects open.",
-    "userId": "JohnSourcer",
-    "parentId": "1jiieu5",
-    "timestamp": 1742793317
-  },
-  {
-    "id": "mjfmgwo",
-    "content": "4GB of RAM??? 😳",
-    "userId": "JohnSourcer",
-    "parentId": "mjfihmp",
-    "timestamp": 1742793351
-  },
-  {
     "id": "mjfru1c",
-    "content": "Profile your code. If you're not sure how, here are a few tools that will help:\n\n0x: [https://github.com/davidmarkclements/0x](https://github.com/davidmarkclements/0x)\n\nClinic: [https://github.com/clinicjs/node-clinic](https://github.com/clinicjs/node-clinic)\n\nFlamebearer: [https://github.com/mapbox/flamebearer](https://github.com/mapbox/flamebearer)\n\nChrome dev tools: [https://developer.chrome.com/docs/devtools/performance/nodejs](https://developer.chrome.com/docs/devtools/performance/nodejs)\n\nOnce you profile and get some output, let me know if you'd like help interpreting the results. Performance profiling feels like black magic at first, but it's an incredibly useful skill and it's worth investing a bit of time to learn.\n\nThese will want to attach to the Node process, and it's not obvious at first how to apply this to Next. What you can do is find the executable - usually \\`node\\_modules/next/dist/bin/next\\` - and run \\`node\\` with that file path as the argument, or whatever the tool's docs say.\n\nExample: \\`node ./node\\_modules/next/dist/bin/next dev\\`",
+    "content": "<p>Profile your code. If you're not sure how, here are a few tools that will help:</p>\n<p>0x: <a href=\"https://github.com/davidmarkclements/0x\">https://github.com/davidmarkclements/0x</a></p>\n<p>Clinic: <a href=\"https://github.com/clinicjs/node-clinic\">https://github.com/clinicjs/node-clinic</a></p>\n<p>Flamebearer: <a href=\"https://github.com/mapbox/flamebearer\">https://github.com/mapbox/flamebearer</a></p>\n<p>Chrome dev tools: <a href=\"https://developer.chrome.com/docs/devtools/performance/nodejs\">https://developer.chrome.com/docs/devtools/performance/nodejs</a></p>\n<p>Once you profile and get some output, let me know if you'd like help interpreting the results. Performance profiling feels like black magic at first, but it's an incredibly useful skill and it's worth investing a bit of time to learn.</p>\n<p>These will want to attach to the Node process, and it's not obvious at first how to apply this to Next. What you can do is find the executable - usually `node_modules/next/dist/bin/next` - and run `node` with that file path as the argument, or whatever the tool's docs say.</p>\n<p>Example: `node ./node_modules/next/dist/bin/next dev`</p>\n",
     "userId": "pverdeb",
     "parentId": "1jiieu5",
     "timestamp": 1742796540
   },
   {
     "id": "mjfy27w",
-    "content": "When it's in dev mode, it keeps recompiling changes, try the build version to see what it will need when running in prod mode",
+    "content": "<p>When it's in dev mode, it keeps recompiling changes, try the build version to see what it will need when running in prod mode</p>\n",
     "userId": "hirebirhan",
     "parentId": "1jiieu5",
     "timestamp": 1742800573
   },
   {
+    "id": "mjfmepf",
+    "content": "<p>I don't have this issue and have multiple next projects open.</p>\n",
+    "userId": "JohnSourcer",
+    "parentId": "1jiieu5",
+    "timestamp": 1742793317
+  },
+  {
+    "id": "mjgzjmp",
+    "content": "<p>I dont even notice it now but when I migrated from Vite, Next dev environment slaggishness had me questioning my decisions,  updates and commands are much slower</p>\n",
+    "userId": "meanuk",
+    "parentId": "1jiieu5",
+    "timestamp": 1742821458
+  },
+  {
+    "id": "mjfj1ye",
+    "content": "<p>Are you using turbopack? Depending on the libraries you're using you might get away with running it. I've had shit luck trying to get it to work despite Vercel saying it's passing like a billion tests. Feels like all those tests are just asserting true. Anyway give it a go if you aren't using it. My pages take 4 seconds to load most times on a 12 core AM5 so 1 second you're getting is pretty good!</p>\n<p>https://nextjs.org/docs/app/api-reference/turbopack</p>\n",
+    "userId": "Wild_Committee_342",
+    "parentId": "1jiieu5",
+    "timestamp": 1742791492
+  },
+  {
+    "id": "mjfjw0s",
+    "content": "<p>Yes I'm using turbopack</p>\n",
+    "userId": "ThisIsntMyId",
+    "parentId": "mjfj1ye",
+    "timestamp": 1742791931
+  },
+  {
+    "id": "mjh87oe",
+    "content": "<p>Currently turbopack takes good amount of compute resources to provide faster hot reloading experience. If you're system getting slow , please removethe turbpack flag from package.json script</p>\n",
+    "userId": "Nicolasjit",
+    "parentId": "mjfjw0s",
+    "timestamp": 1742824541
+  },
+  {
+    "id": "mjfihmp",
+    "content": "<p>When my Intel Core i3 laptop had 4GB of RAM Next.js would use so many resources that it would log me out of my is (Linux), I guess in Windows would freeze my laptop. Now, with an SSD and 8GB, it's better, but I know it wouldn't be enough for very large projects.</p>\n<p>If you want to use Next.js, you need good hardware.</p>\n<p>The next time you are gonna build something try using React + React Router with Vite, you will notice the difference.</p>\n",
+    "userId": "gdmr458",
+    "parentId": "1jiieu5",
+    "timestamp": 1742791201
+  },
+  {
+    "id": "mjfmgwo",
+    "content": "<p>4GB of RAM??? 😳</p>\n",
+    "userId": "JohnSourcer",
+    "parentId": "mjfihmp",
+    "timestamp": 1742793351
+  },
+  {
+    "id": "mjh3z5x",
+    "content": "<p>I live in a third world country, I won that laptop for having good grades.</p>\n",
+    "userId": "gdmr458",
+    "parentId": "mjfmgwo",
+    "timestamp": 1742823081
+  },
+  {
+    "id": "mjhat75",
+    "content": "<p>This is good but 4GB is not enough. Which 3rd world country?</p>\n",
+    "userId": "JohnSourcer",
+    "parentId": "mjh3z5x",
+    "timestamp": 1742825346
+  },
+  {
+    "id": "mjiukun",
+    "content": "<p>I mentioned third world country because getting a decent laptop here if you don't have a good salary is difficult, I got my first job a few months ago and still is not enough.</p>\n<p>There are people out there that for sure have a more difficult life than me, there is this guy from Bangladesh that has a popular Neovim plugin with a lot of stars doing all the development from a phone, the Neovim community help him getting a laptop.</p>\n",
+    "userId": "gdmr458",
+    "parentId": "mjhat75",
+    "timestamp": 1742841839
+  },
+  {
+    "id": "mjho3yr",
+    "content": "<p>Nice one. 4gb of ram should be plenty to build a web app.</p>\n",
+    "userId": "ChemistryMost4957",
+    "parentId": "mjh3z5x",
+    "timestamp": 1742829513
+  },
+  {
+    "id": "mjfm62e",
+    "content": "<p>It's just tons of build processing. I wish js frameworks moved more towards executing the code you write directly.</p>\n",
+    "userId": "yksvaan",
+    "parentId": "1jiieu5",
+    "timestamp": 1742793180
+  },
+  {
     "id": "mjgcsk8",
-    "content": "Is that even possible in JS?",
+    "content": "<p>Is that even possible in JS?</p>\n",
     "userId": "ajeeb_gandu",
     "parentId": "mjfm62e",
     "timestamp": 1742810468
   },
   {
     "id": "mjgjq87",
-    "content": "Vite is way faster than turbopack so it's not a \"ton of build processing\" problem but a turbopack problem",
+    "content": "<p>Vite is way faster than turbopack so it's not a \"ton of build processing\" problem but a turbopack problem</p>\n",
     "userId": "jeanbonswaggy",
     "parentId": "mjfm62e",
     "timestamp": 1742814439
   },
   {
     "id": "mjgr9ih",
-    "content": "The core of the issue is nextjs monolithic structure to support RSC and related functionality. Vite uses native esm modules in dev to send only changes to browser.\n\n\nTurpopack doesn't, on their page it says \"that may lead to excessive amount of requests\" which sounds just weird. Likely their build process can't support incremental modular builds easily and they have intermediate steps there with turpopack.",
+    "content": "<p>The core of the issue is nextjs monolithic structure to support RSC and related functionality. Vite uses native esm modules in dev to send only changes to browser.</p>\n<p>Turpopack doesn't, on their page it says \"that may lead to excessive amount of requests\" which sounds just weird. Likely their build process can't support incremental modular builds easily and they have intermediate steps there with turpopack.</p>\n",
     "userId": "yksvaan",
     "parentId": "mjgjq87",
     "timestamp": 1742818067
-  },
-  {
-    "id": "mjgzjmp",
-    "content": "I dont even notice it now but when I migrated from Vite, Next dev environment slaggishness had me questioning my decisions,  updates and commands are much slower",
-    "userId": "meanuk",
-    "parentId": "1jiieu5",
-    "timestamp": 1742821458
-  },
-  {
-    "id": "mjh3z5x",
-    "content": "I live in a third world country, I won that laptop for having good grades.",
-    "userId": "gdmr458",
-    "parentId": "mjfmgwo",
-    "timestamp": 1742823081
-  },
-  {
-    "id": "mjh87oe",
-    "content": "Currently turbopack takes good amount of compute resources to provide faster hot reloading experience. If you're system getting slow , please removethe turbpack flag from package.json script",
-    "userId": "Nicolasjit",
-    "parentId": "mjfjw0s",
-    "timestamp": 1742824541
-  },
-  {
-    "id": "mjhat75",
-    "content": "This is good but 4GB is not enough. Which 3rd world country?",
-    "userId": "JohnSourcer",
-    "parentId": "mjh3z5x",
-    "timestamp": 1742825346
-  },
-  {
-    "id": "mjho3yr",
-    "content": "Nice one. 4gb of ram should be plenty to build a web app.",
-    "userId": "ChemistryMost4957",
-    "parentId": "mjh3z5x",
-    "timestamp": 1742829513
-  },
-  {
-    "id": "mjiukun",
-    "content": "I mentioned third world country because getting a decent laptop here if you don't have a good salary is difficult, I got my first job a few months ago and still is not enough.\n\nThere are people out there that for sure have a more difficult life than me, there is this guy from Bangladesh that has a popular Neovim plugin with a lot of stars doing all the development from a phone, the Neovim community help him getting a laptop.",
-    "userId": "gdmr458",
-    "parentId": "mjhat75",
-    "timestamp": 1742841839
   }
 ]

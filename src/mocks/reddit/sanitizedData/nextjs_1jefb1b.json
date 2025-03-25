@@ -1,0 +1,225 @@
+[
+  {
+    "id": "1jefb1b",
+    "content": "<p>AI bots are Evil. Vercel Firewall is a disaster. Should I switch ?</p>\n<p>Short story long : <strong>AI bots and crawlers started sucking hard on my app.</strong> I'm currently on Vercel Hobby plan and have around 350 Monthly Active Users.</p>\n<p>That being said, I started to receive warnings from Vercel about usage and... here's what I found : <strong>AI bots and crawlers are HUNGRY.</strong> HORRIBLY HUNGRY (see below)</p>\n<p>Problem : you can block the \"nice\" bots with robots.txt, but evil ones won't care (like Alibaba, see below). Already disallowed some bots from my robots.txt.</p>\n<p>Problem n°2 : with Vercel's firewall, if you set a custom rule to deny based on user agent, JA4 or something else... <strong>you'll still be charged for that.</strong></p>\n<p>Now look at my firewall dashboard :</p>\n<p><a href=\"https://preview.redd.it/59vybxczcipe1.png?width=1380&#x26;format=png&#x26;auto=webp&#x26;s=7d31acd0cc7f6e5b9395066bac0d33561572b2f9\">About 50&#x26;#37; of traffic Is Alibaba bot I deny by JA4. I'm still charged for this.</a></p>\n<p><a href=\"https://preview.redd.it/gj1qwub0dipe1.png?width=1380&#x26;format=png&#x26;auto=webp&#x26;s=18b8790e0c26b2e5e39fa41f74eb997b49c99c65\">About 70&#x26;#37; of allowed traffic is another both. I could block it, but I would still be charged for this.</a></p>\n<p>This is getting ridiculous.<br>\nVercel documentation says that \"permanent actions\" avoid being charged, but <strong>they are not available in the product anymore</strong>.</p>\n<p>So my question is : what are my options ?</p>\n<ol>\n<li>Put a <strong>proxy/firewall</strong> in front of Vercel ? User a product or self hosted.</li>\n<li>Use <strong>Cloudflare</strong> for caching and firewall ? (about 20$/month)</li>\n<li><strong>Self Host</strong> (already have a VPS) instead of Vercel so I can have full control ? There should be an open source traffic management tooling I guess</li>\n<li>Go with <strong>pro plan with Vercel</strong> and use rate limiting ? (not perfect but still better I guess ?)</li>\n<li>Use another hosting service that allows this level of firewall configuration ?</li>\n</ol>\n<p>How did you <strong>avoid being hammered</strong> and charged for bots by SaaS ?</p>\n<p>App built with NextJS15, SSR and ISR. All data queries cached.<br>\nGoogle Analytics says about 350-400 Monthly Active Users so far.</p>\n",
+    "userId": "pardon_anon",
+    "timestamp": 1742330406
+  },
+  {
+    "id": "mij6oz4",
+    "content": "<p>If you know these bots are disregarding your robots.txt, set a rule for those specific user agents and deny a nonexistent route that nobody would ever legitimately access. Create a function at that route, and use the Vercel API to set a new IP address block for the requester.</p>\n<p>This is a honeypot, and it’s a pretty common pattern in infosec. IP blocking prevents charges as well - you may need to periodically purge your blocked IPs or consolidate them into subnets.</p>\n<p>You should really be on pro as somebody else mentioned. Persistent actions are definitely still part of the product, maybe they’re not available on the free tier.</p>\n",
+    "userId": "pverdeb",
+    "parentId": "1jefb1b",
+    "timestamp": 1742342323
+  },
+  {
+    "id": "mik0ked",
+    "content": "<p>Oh that's really clever and I never thought of this, thanks for the insight!\nThat would be something new to learn on the way and a good practice to implement.</p>\n<p>About the Pro plan, I agree but as this is a side project, I'm always trying to ask myself \"can you do it properly with what you already have?\" before going on a paid plan or adding something new to the stack.</p>\n<p>Thanks for the valuable insights!</p>\n",
+    "userId": "pardon_anon",
+    "parentId": "mij6oz4",
+    "timestamp": 1742352686
+  },
+  {
+    "id": "mikvinm",
+    "content": "<p>Well sure but you have quite a large user base. Pro’s only $20 a month. Really cheap considering what you get for it</p>\n",
+    "userId": "ske66",
+    "parentId": "mik0ked",
+    "timestamp": 1742368256
+  },
+  {
+    "id": "mimb0pu",
+    "content": "<p>No problem. In case you haven’t seen, there’s an SDK that makes the implementation super easy: https://github.com/vercel/sdk/blob/main/docs/sdks/security/README.md</p>\n<p>The body object isn’t documented very thoroughly on Github but the API docs explain the options, and you can also reverse engineer the different options by manually creating rules in the dashboard and inspecting the requests.</p>\n",
+    "userId": "pverdeb",
+    "parentId": "mik0ked",
+    "timestamp": 1742392640
+  },
+  {
+    "id": "miia2pf",
+    "content": "<p>This is how I do it to have caching and no threat from bots or ddos'ing.  You could technically host it on a $1/month VPS : <a href=\"https://darkflows.com/blog/67c480eedfe3107e6c823a1a\">https://darkflows.com/blog/67c480eedfe3107e6c823a1a</a></p>\n",
+    "userId": "PositiveEnergyMatter",
+    "parentId": "1jefb1b",
+    "timestamp": 1742332281
+  },
+  {
+    "id": "miib0pf",
+    "content": "<p>Thanks for sharing mate! Will read 👌</p>\n",
+    "userId": "pardon_anon",
+    "parentId": "miia2pf",
+    "timestamp": 1742332559
+  },
+  {
+    "id": "mii4zul",
+    "content": "<p>It's so simple...just host with Cloudflare and that's it. It's free, no cost involved to deal with DDoS.</p>\n<p>There are some people that even use Cloudflare (free) just as a shield for DDoS while still being in Vercel.</p>\n",
+    "userId": "caffeinated-serdes",
+    "parentId": "1jefb1b",
+    "timestamp": 1742330827
+  },
+  {
+    "id": "mii8uii",
+    "content": "<p>Oh I looked at Cloudflare and saw it was paying for the proxy/firewall service but maybe I misunderstood it. I will give it another look, thanks</p>\n",
+    "userId": "pardon_anon",
+    "parentId": "mii4zul",
+    "timestamp": 1742331925
+  },
+  {
+    "id": "miia4y1",
+    "content": "<p>its free</p>\n",
+    "userId": "PositiveEnergyMatter",
+    "parentId": "mii8uii",
+    "timestamp": 1742332300
+  },
+  {
+    "id": "mijmom1",
+    "content": "<p>If you are using Vercel, there's no need for Cloudflare. The Vercel Firewall has the same functionality, is also free, and can protect your from DDoS. There are even more advanced firewall rules like targeting JA4 digests which are free on Vercel but paid on Cloudflare, as well as other more powerful rules</p>\n",
+    "userId": "lrobinson2011",
+    "parentId": "mii8uii",
+    "timestamp": 1742347778
+  },
+  {
+    "id": "mik1wto",
+    "content": "<p>OK I get it. I guess that what make some uncomfortable is making custom rules to deny and still have this counting as legit traffic.\nPersistent actions seem to be the answer, but they are not visible in hobby plan and not it any screenshot I've seen so far either. Support in the forum couldn't confirm/inform this yet, so I'm not counting on it so far.\nWeird question here but did you experience persistent actions yourself? That'd be a solid 20€/month just for this feature but I'm considering all options, even if every penny counts.</p>\n<p>I was thinking of cloud flare to mix this with full route cache, but this is another topic ^^.\nI'd be happy with Vercel firewall if I could be not charged for traffic I block with custom rules. This is a tough spot for an indie side project and I worry waking up one day with a crazy bill for a crawler madness overnight.</p>\n",
+    "userId": "pardon_anon",
+    "parentId": "mijmom1",
+    "timestamp": 1742353201
+  },
+  {
+    "id": "miop32r",
+    "content": "<p>setup cap on spend management if you plan to upgrade to pro, will help you sleep better at night.</p>\n",
+    "userId": "Important_Tonight_23",
+    "parentId": "mik1wto",
+    "timestamp": 1742418047
+  },
+  {
+    "id": "mikmqs5",
+    "content": "<p>Once CloudFlare releases the stable version of @opennextjs/cloudflare it’ll be a no brainer to have everything there. The free plan can get you very far and the pro plan for 5usd it’s amazing. One click to enable bot protection and you are good to go.</p>\n",
+    "userId": "Solid_Error_1332",
+    "parentId": "1jefb1b",
+    "timestamp": 1742362913
+  },
+  {
+    "id": "mito0zm",
+    "content": "<p>Fuck yeah, I'd rather be vendor locked in with daddy cloudflare than uncle vercel</p>\n",
+    "userId": "extraquacky",
+    "parentId": "mikmqs5",
+    "timestamp": 1742489752
+  },
+  {
+    "id": "mittzzj",
+    "content": "<p>Yeah, specially after seeing so many people reporting huge costs on Vercel after getting requests by bots. That doesn’t happen on Cloudflare.</p>\n",
+    "userId": "Solid_Error_1332",
+    "parentId": "mito0zm",
+    "timestamp": 1742491439
+  },
+  {
+    "id": "mittxw7",
+    "content": "<p>Cloudflare got 5GB (500 mb x10 databases) free D1 database. </p>\n",
+    "userId": "MMORPGnews",
+    "parentId": "mito0zm",
+    "timestamp": 1742491423
+  },
+  {
+    "id": "miid8hg",
+    "content": "<p>You get 1 million free edge requests per month and then $2 per 1 million after that - judging by your requests there, you wouldn't hit this free allowance if you implemented custom rules. If you were on the Vercel Pro plan (which you should be, if you're operating in a commercial capacity), you get 10 million free per month. I'm not sure about how these bots work but wouldn't most stop querying your site after a certain amount of blocked requests? My take is to just enable custom rules and monitor it. Turn off specific bot rules when the requests scale down and turn on when they scale up.</p>\n",
+    "userId": "Rhysypops",
+    "parentId": "1jefb1b",
+    "timestamp": 1742333205
+  },
+  {
+    "id": "mik38sr",
+    "content": "<p>Hey mate\nI wish I wouldn't, but from Vercel documentation, custom rules still count in the amount of processed requests, even if it's a deny.\nFor the context, it's a fully personal project with no money earning associated, which is why I'm kind of counting pennies before adding new costs.</p>\n<p>Your question makes sense about bots behavior and I experienced in this way. From what I've seen (especially with this alibaba devil, sorry for them) it only works on very short term. That means that with an appropriate rule (like JA4 custom rule) they stop querying after few hours instead of querying for 20h non stop. Problem is that they come back the next day. I haven't enough data yet to know if they give up after a month or so, but I'm still blocking them for now just for the sake of \"sending a message\" and try to trigger a \"give up on this domain\" effect on their side.</p>\n<p>That's still reducing the total amount, you're right, but I can't help but try to think of a longer term solution and always curious to learn new good practices and tips here :)</p>\n",
+    "userId": "pardon_anon",
+    "parentId": "miid8hg",
+    "timestamp": 1742353722
+  },
+  {
+    "id": "mimidas",
+    "content": "<p><a href=\"https://zadzmo.org/code/nepenthes/\">https://zadzmo.org/code/nepenthes/</a></p>\n<p>here you go: an  AI tarpit, so they can't get their bots back :)</p>\n",
+    "userId": "DB691",
+    "parentId": "1jefb1b",
+    "timestamp": 1742394963
+  },
+  {
+    "id": "mipzhu1",
+    "content": "<p>Oh that’s nice and feels like Justice.</p>\n",
+    "userId": "teddynovakdp",
+    "parentId": "mimidas",
+    "timestamp": 1742432972
+  },
+  {
+    "id": "mioki9p",
+    "content": "<p>I just use their firewall rule: https://vercel.com/templates/other/block-ai-bots-firewall-rule</p>\n",
+    "userId": "Full-Read",
+    "parentId": "1jefb1b",
+    "timestamp": 1742416733
+  },
+  {
+    "id": "milju53",
+    "content": "<p>I had Claude absolutely rail one of my VPSes recently, just blocked it with an Nginx rule. It used a total of 2200+ IPs to scrape a single website...</p>\n",
+    "userId": "lakimens",
+    "parentId": "1jefb1b",
+    "timestamp": 1742381782
+  },
+  {
+    "id": "milli7o",
+    "content": "<p>Such a nightmare.\nScraping? Sure, why not. But take it carefully and announce your Agent. Common courtesy.</p>\n",
+    "userId": "pardon_anon",
+    "parentId": "milju53",
+    "timestamp": 1742382619
+  },
+  {
+    "id": "mimicqk",
+    "content": "<p>,..</p>\n",
+    "userId": "gemmy000",
+    "parentId": "1jefb1b",
+    "timestamp": 1742394958
+  },
+  {
+    "id": "mirbkf5",
+    "content": "<p>Cloudflare is always the smarter way to go…. You’ll eventually end up there.</p>\n<p>And no I don’t work there.\nAs for latency, Vercel hosts in AWS infrastructure.\nCloudflare has a much better edge distribution… If you care about really low latencies.</p>\n<p>But you’ll have to settle with Next 15.1.7 and nodes edge runtime. Cloudflare team is sleeping on 15.2.</p>\n",
+    "userId": "reezy-k",
+    "parentId": "1jefb1b",
+    "timestamp": 1742454746
+  },
+  {
+    "id": "mikgg4u",
+    "content": "<p>You can put a free plan CloudFlare firewall in front of your Vercel one, it doesn't have to be an either/or choice.</p>\n",
+    "userId": "rylab",
+    "parentId": "1jefb1b",
+    "timestamp": 1742359539
+  },
+  {
+    "id": "mikmuc3",
+    "content": "<p>VPS + Coolify + free Plan CloudFlare. Such a great tool and it’s open source + super easy to deploy.</p>\n",
+    "userId": "seeKAYx",
+    "parentId": "1jefb1b",
+    "timestamp": 1742362969
+  },
+  {
+    "id": "mikcuvf",
+    "content": "<p>This is why I use railway instead of vercel, then host FE/BE/DB and use internal connections to avoid egress fees.</p>\n",
+    "userId": "Zesty-Code",
+    "parentId": "1jefb1b",
+    "timestamp": 1742357811
+  },
+  {
+    "id": "milmdmj",
+    "content": "<p>Self host on VPS with pm2 and your domain through Cloudflare</p>\n",
+    "userId": "hadesownage",
+    "parentId": "1jefb1b",
+    "timestamp": 1742383049
+  },
+  {
+    "id": "miloks4",
+    "content": "<p>I wonder how to do the same for self-hosted setups. I would not necessarily want to deny bots, but for specific bots I would want to show a static placeholder, not a fully crawlable website.</p>\n",
+    "userId": "RuslanDevs",
+    "parentId": "1jefb1b",
+    "timestamp": 1742384089
+  },
+  {
+    "id": "milwtog",
+    "content": "<p>Question more complex than I thought.\nWhat makes a website crawlable is its existence and pages being linked.\nYou could have a dedicated part of your site dedicated to bots and another for users?\nA rule on your webserver or firewall could block or redirect when bots user agents or ip hit the path of your website dedicated to users?\nThat's what comes to my mind but there might be other options.</p>\n",
+    "userId": "pardon_anon",
+    "parentId": "miloks4",
+    "timestamp": 1742387556
+  }
+]
