@@ -1,24 +1,28 @@
 {
-  "name": "FakeDataBuilder",
-  "private": true,
+  "name": "service",
+  "version": "1.0.0",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types"
+    "dev": "nodemon --exec ts-node src/index.ts --signal SIGTERM",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "mockgen": "ts-node src/mocks/cli.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "A simple Express service that generates fake data for testing and development.",
+  "dependencies": {
+    "@types/node": "^22.13.13",
+    "axios": "^1.8.4",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
   },
   "devDependencies": {
-    "prettier": "^3.5.3",
-    "turbo": "^2.4.4",
-    "typescript": "5.8.2"
-  },
-  "engines": {
-    "node": ">=18"
-  },
-  "packageManager": "npm@10.9.2",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+    "@types/express": "^5.0.1",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
 }

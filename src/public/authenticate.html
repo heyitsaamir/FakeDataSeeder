@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft Authentication</title>
+    <link rel="stylesheet" href="styles/authenticate.css">
+</head>
+<body>
+    <div class="auth-container">
+        <h1>Teams AI Dev Fake Data Authentication</h1>
+        <div id="successMessage" class="message success hidden"></div>
+        <div id="errorMessage" class="message error hidden"></div>
+        <div id="authContent">
+            <p>Click the button below to authenticate with your Microsoft account.</p>
+            <button id="authButton" class="auth-button" disabled>Loading...</button>
+            <div id="status" class="status">Fetching authentication URL...</div>
+        </div>
+    </div>
+
+    <script src="scripts/authenticate.js"></script>
+</body>
+</html> 
