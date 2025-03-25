@@ -7,7 +7,6 @@
     {
       "name": "Launch via NPM",
       "request": "launch",
-      "cwd": "${workspaceFolder}/apps/service",
       "runtimeArgs": ["run-script", "dev"],
       "runtimeExecutable": "npm",
       "type": "node"
