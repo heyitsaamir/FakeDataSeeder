@@ -7,7 +7,6 @@ export interface GraphAccount {
 export interface MockMessage {
   id: string;
   userId: string;
-  sender: string;
   content: string;
   timestamp: number;
   parentId?: string;

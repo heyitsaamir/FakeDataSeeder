@@ -56,7 +56,12 @@ export class ConversationService {
   }
 
   public getAllConversations(): Conversation[] {
-    return Array.from(this.conversations.values());
+    return Array.from(this.conversations.values()).sort((a, b) => {
+      return (
+        new Date(b.createdDateTime!).getTime() -
+        new Date(a.createdDateTime!).getTime()
+      );
+    });
   }
 
   public getConversation(conversationId: string): Conversation | undefined {
@@ -188,6 +193,7 @@ export class ConversationService {
 
     for (const userId in tokens) {
       try {
+        console.log(`Fetching chats for user ${userId}`);
         const chats = await this.fetchUserChats(userId);
         results[userId] = chats;
       } catch (error) {
@@ -196,6 +202,14 @@ export class ConversationService {
       }
     }
 
-    return results;
+    // Order results by createdDateTime
+    return Object.fromEntries(
+      Object.entries(results).sort((a, b) => {
+        return (
+          new Date(b[1][0].createdDateTime!).getTime() -
+          new Date(a[1][0].createdDateTime!).getTime()
+        );
+      })
+    );
   }
 }

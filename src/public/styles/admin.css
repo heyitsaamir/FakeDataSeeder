@@ -148,15 +148,7 @@ button:disabled {
     padding: 0.75rem;
     border-radius: 4px;
     position: relative;
-}
-.message-preview:nth-child(odd) {
-    background-color: #f8f9fa;
-    margin-right: 10%;
-    border-top-left-radius: 0;
-}
-.message-preview:nth-child(even) {
     background-color: #e7f1ff;
-    margin-left: 10%;
     border-top-right-radius: 0;
 }
 .message-author {

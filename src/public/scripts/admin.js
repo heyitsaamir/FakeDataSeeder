@@ -91,8 +91,9 @@ async function loadTokens() {
     renderTokens(tokens);
   } catch (error) {
     console.error("Error loading tokens:", error);
-    document.getElementById("tokensContainer").innerHTML =
-      `<p class="error">Error loading tokens: ${error.message}</p>`;
+    document.getElementById(
+      "tokensContainer"
+    ).innerHTML = `<p class="error">Error loading tokens: ${error.message}</p>`;
   }
 }
 
@@ -150,11 +151,17 @@ function renderTokens(tokens) {
     const seconds = Math.floor((timeDiffMs % (1000 * 60)) / 1000);
 
     if (days > 0) {
-      timeText = `${days} day${days > 1 ? "s" : ""} ${hours} hr${hours > 1 ? "s" : ""}`;
+      timeText = `${days} day${days > 1 ? "s" : ""} ${hours} hr${
+        hours > 1 ? "s" : ""
+      }`;
     } else if (hours > 0) {
-      timeText = `${hours} hr${hours > 1 ? "s" : ""} ${minutes} min${minutes > 1 ? "s" : ""}`;
+      timeText = `${hours} hr${hours > 1 ? "s" : ""} ${minutes} min${
+        minutes > 1 ? "s" : ""
+      }`;
     } else if (minutes > 0) {
-      timeText = `${minutes} minute${minutes > 1 ? "s" : ""} ${seconds} sec${seconds > 1 ? "s" : ""}`;
+      timeText = `${minutes} minute${minutes > 1 ? "s" : ""} ${seconds} sec${
+        seconds > 1 ? "s" : ""
+      }`;
     } else {
       timeText = `${seconds} second${seconds > 1 ? "s" : ""}`;
     }
@@ -174,7 +181,9 @@ function renderTokens(tokens) {
                     <div style="font-size: 0.8em; font-style: italic;">${timeText}</div>
                 </td>
                 <td class="token-actions">
-                    <button class="refresh-token" data-userid="${userId}"${isExpired ? "" : ' style="opacity: 0.6;"'}>Refresh Token</button>
+                    <button class="refresh-token" data-userid="${userId}"${
+      isExpired ? "" : ' style="opacity: 0.6;"'
+    }>Refresh Token</button>
                 </td>
             </tr>
         `;
@@ -260,9 +269,10 @@ function renderMocks(mocks) {
   let html = "";
   mocks.forEach((mock) => {
     html += `
-            <div class="mock-card" data-mock="${mock.path}">
+            <div class="mock-card" data-mock="${mock.path}" data-folder="${mock.folder}">
                 <h3>${mock.name}</h3>
                 <p>${mock.messageCount} messages</p>
+                <p class="mock-folder" style="font-size: 0.8em; color: #666; margin-top: 0.5em;">Source: ${mock.folder}</p>
             </div>
         `;
   });
@@ -281,7 +291,10 @@ function renderMocks(mocks) {
       card.classList.add("selected");
 
       // Store selected mock
-      selectedMock = card.getAttribute("data-mock");
+      selectedMock = {
+        path: card.getAttribute("data-mock"),
+        folder: card.getAttribute("data-folder"),
+      };
 
       // Load mock preview
       loadMockPreview(selectedMock);
@@ -292,8 +305,8 @@ function renderMocks(mocks) {
   });
 }
 
-async function loadMockPreview(mockPath) {
-  if (!mockPath) return;
+async function loadMockPreview(mockInfo) {
+  if (!mockInfo || !mockInfo.path || !mockInfo.folder) return;
 
   // Show loading state
   mockPreviewContainer.style.display = "block";
@@ -302,7 +315,9 @@ async function loadMockPreview(mockPath) {
 
   try {
     const response = await fetch(
-      `/mock-preview/${encodeURIComponent(mockPath)}`,
+      `/mock-preview/${encodeURIComponent(
+        mockInfo.folder
+      )}/${encodeURIComponent(mockInfo.path)}`,
       {
         headers: {
           "Admin-Auth": localStorage.getItem(LOCAL_STORAGE_KEY),
@@ -356,7 +371,11 @@ async function loadMockPreview(mockPath) {
 
       // Get sender information
       const sender = escapeHtml(
-        message.sender || message.from || message.author || "Unknown"
+        message.sender ||
+          message.from ||
+          message.author ||
+          message.userId ||
+          "Unknown"
       );
 
       // Format date
@@ -368,13 +387,17 @@ async function loadMockPreview(mockPath) {
                 <div class="message-preview">
                     <div class="message-author">${sender}</div>
                     <div class="message-time">${date}</div>
-                    <div class="message-content">${escapeHtml(messageContent)}</div>
+                    <div class="message-content">${escapeHtml(
+                      messageContent
+                    )}</div>
                 </div>
             `;
     });
 
     if (mockData.length > 10) {
-      html += `<div style="text-align: center; font-style: italic; margin-top: 1rem;">...and ${mockData.length - 10} more messages</div>`;
+      html += `<div style="text-align: center; font-style: italic; margin-top: 1rem;">...and ${
+        mockData.length - 10
+      } more messages</div>`;
     }
 
     mockPreview.innerHTML = html;
@@ -386,13 +409,22 @@ async function loadMockPreview(mockPath) {
 
 // Enable/disable seed button based on conversation ID input
 conversationIdInput.addEventListener("input", () => {
-  seedButton.disabled = !(conversationIdInput.value.trim() && selectedMock);
+  seedButton.disabled = !(
+    conversationIdInput.value.trim() &&
+    selectedMock &&
+    selectedMock.path
+  );
 });
 
 seedButton.addEventListener("click", async () => {
   const conversationId = conversationIdInput.value.trim();
 
-  if (!conversationId || !selectedMock) {
+  if (
+    !conversationId ||
+    !selectedMock ||
+    !selectedMock.path ||
+    !selectedMock.folder
+  ) {
     seedStatus.textContent =
       "Please provide a conversation ID and select a mock.";
     seedStatus.className = "error";
@@ -405,6 +437,7 @@ seedButton.addEventListener("click", async () => {
     seedStatus.textContent = "Seeding conversation...";
     seedStatus.className = "";
 
+    console.log("Seeding conversation with ID:", conversationId);
     const response = await fetch("/seed/chat", {
       method: "POST",
       headers: {
@@ -413,7 +446,8 @@ seedButton.addEventListener("click", async () => {
       },
       body: JSON.stringify({
         conversationId,
-        mockPath: selectedMock,
+        folder: selectedMock.folder,
+        mockFile: selectedMock.path,
       }),
     });
 
@@ -540,7 +574,9 @@ function renderConversations(conversations, userTokens = {}) {
           "Unknown User";
         const hasToken = tokenUserIds.includes(member.userId);
         const tokenClass = hasToken ? "has-token" : "";
-        membersHtml += `<span class="member-badge ${tokenClass}" title="${hasToken ? "User has active token" : ""}">${escapeHtml(memberName)}</span>`;
+        membersHtml += `<span class="member-badge ${tokenClass}" title="${
+          hasToken ? "User has active token" : ""
+        }">${escapeHtml(memberName)}</span>`;
       });
 
       membersHtml += "</div></div>";
@@ -550,7 +586,9 @@ function renderConversations(conversations, userTokens = {}) {
     html += `
             <div class="conversation-card" data-id="${conversation.id}">
                 <div class="conversation-header">
-                    <h3 class="conversation-title">${conversation.topic || "Untitled Conversation"}</h3>
+                    <h3 class="conversation-title">${
+                      conversation.topic || "Untitled Conversation"
+                    }</h3>
                     <span class="conversation-date">${date}</span>
                 </div>
                 <div>
@@ -558,8 +596,12 @@ function renderConversations(conversations, userTokens = {}) {
                 </div>
                 ${membersHtml}
                 <div class="conversation-actions">
-                    <button class="copy-id" data-id="${conversation.id}">Copy ID</button>
-                    <button class="seed-to-conversation" data-id="${conversation.id}">Seed Mock Data</button>
+                    <button class="copy-id" data-id="${
+                      conversation.id
+                    }">Copy ID</button>
+                    <button class="seed-to-conversation" data-id="${
+                      conversation.id
+                    }">Seed Mock Data</button>
                 </div>
             </div>
         `;
@@ -595,7 +637,7 @@ function renderConversations(conversations, userTokens = {}) {
       document.querySelector('.tab-link[data-tab="mocks"]').click();
       conversationIdInput.value = id;
       // Enable seed button if a mock is selected
-      seedButton.disabled = !selectedMock;
+      seedButton.disabled = !(selectedMock && selectedMock.path);
       // Scroll to the seed section
       document
         .querySelector(".form-group h3")
@@ -691,7 +733,9 @@ function renderGraphConversations(userChats, userTokens = {}) {
     html += `
             <div class="user-section" style="margin-bottom: 1.5rem; border-bottom: 1px solid #eee; padding-bottom: 1rem;">
                 <h4 style="margin-bottom: 0.5rem;">
-                    <span class="member-badge ${userTokenClass}" title="${hasUserToken ? "User has active token" : ""}">${escapeHtml(userName)}</span>'s Conversations
+                    <span class="member-badge ${userTokenClass}" title="${
+      hasUserToken ? "User has active token" : ""
+    }">${escapeHtml(userName)}</span>'s Conversations
                 </h4>
         `;
 
@@ -718,7 +762,9 @@ function renderGraphConversations(userChats, userTokens = {}) {
             "Unknown User";
           const hasToken = tokenUserIds.includes(member.userId);
           const tokenClass = hasToken ? "has-token" : "";
-          membersHtml += `<span class="member-badge ${tokenClass}" title="${hasToken ? "User has active token" : ""}">${escapeHtml(memberName)}</span>`;
+          membersHtml += `<span class="member-badge ${tokenClass}" title="${
+            hasToken ? "User has active token" : ""
+          }">${escapeHtml(memberName)}</span>`;
         });
 
         membersHtml += "</div></div>";
@@ -728,7 +774,9 @@ function renderGraphConversations(userChats, userTokens = {}) {
       html += `
                 <div class="conversation-card" data-id="${chat.id}">
                     <div class="conversation-header">
-                        <h3 class="conversation-title">${chat.topic || chat.chatType || "Untitled Conversation"}</h3>
+                        <h3 class="conversation-title">${
+                          chat.topic || chat.chatType || "Untitled Conversation"
+                        }</h3>
                         <span class="conversation-date">${date}</span>
                     </div>
                     <div>
@@ -739,8 +787,12 @@ function renderGraphConversations(userChats, userTokens = {}) {
                     </div>
                     ${membersHtml}
                     <div class="conversation-actions">
-                        <button class="copy-id" data-id="${chat.id}">Copy ID</button>
-                        <button class="seed-to-conversation" data-id="${chat.id}">Seed Mock Data</button>
+                        <button class="copy-id" data-id="${
+                          chat.id
+                        }">Copy ID</button>
+                        <button class="seed-to-conversation" data-id="${
+                          chat.id
+                        }">Seed Mock Data</button>
                     </div>
                 </div>
             `;
@@ -779,7 +831,7 @@ function renderGraphConversations(userChats, userTokens = {}) {
       document.querySelector('.tab-link[data-tab="mocks"]').click();
       conversationIdInput.value = id;
       // Enable seed button if a mock is selected
-      seedButton.disabled = !selectedMock;
+      seedButton.disabled = !(selectedMock && selectedMock.path);
       // Scroll to the seed section
       document
         .querySelector(".form-group h3")

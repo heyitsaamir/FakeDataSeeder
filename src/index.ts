@@ -100,7 +100,9 @@ app.get("/auth/callback", async (req: Request, res: Response) => {
 
     // Redirect back to authenticate page with success message
     res.redirect(
-      `/authenticate?success=true&user=${encodeURIComponent(user.userPrincipalName || user.email || "User")}`
+      `/authenticate?success=true&user=${encodeURIComponent(
+        user.userPrincipalName || user.email || "User"
+      )}`
     );
   } catch (error) {
     console.error("Authentication error:", error);
@@ -160,10 +162,10 @@ app.get(
       const userChats = await conversationService.fetchAllUserChats();
       res.json(userChats);
     } catch (error) {
-      console.error("Error fetching conversations from Graph:", error);
-      res
-        .status(500)
-        .json({ error: "Failed to fetch conversations from Microsoft Graph" });
+      console.log("Error fetching conversations from Graph:", error);
+      res.status(500).json({
+        error: "Failed to fetch conversations from Microsoft Graph",
+      });
     }
   }
 );
@@ -210,30 +212,57 @@ app.get("/conversations/:id", adminAuth, (req: Request, res: Response) => {
 // Endpoint to list available mocks
 app.get("/mocks", adminAuth, (req: Request, res: Response) => {
   try {
-    const mockDir = path.join(__dirname, "mocks/reddit/sanitizedData");
-    const mockFiles = fs
-      .readdirSync(mockDir)
-      .filter((file) => file.endsWith(".json"))
-      .map((file) => {
+    const mocksBaseDir = path.join(__dirname, "mocks");
+    const mockFiles = [];
+
+    // Get all subdirectories in the mocks directory
+    const mockSubdirs = fs
+      .readdirSync(mocksBaseDir, { withFileTypes: true })
+      .filter((dirent) => dirent.isDirectory())
+      .map((dirent) => dirent.name);
+
+    // Process each subdirectory
+    for (const subdir of mockSubdirs) {
+      const sanitizedDataPath = path.join(
+        mocksBaseDir,
+        subdir,
+        "sanitizedData"
+      );
+
+      // Skip if sanitizedData doesn't exist in this subdirectory
+      if (!fs.existsSync(sanitizedDataPath)) {
+        continue;
+      }
+
+      // Get all JSON files in the sanitizedData directory
+      const files = fs
+        .readdirSync(sanitizedDataPath)
+        .filter((file) => file.endsWith(".json"));
+
+      // Process each JSON file
+      for (const file of files) {
         try {
-          const filePath = path.join(mockDir, file);
+          const filePath = path.join(sanitizedDataPath, file);
           const content = fs.readFileSync(filePath, "utf8");
           const messages = JSON.parse(content);
 
-          return {
+          mockFiles.push({
             name: file.replace(".json", ""),
             path: file,
+            folder: subdir,
             messageCount: Array.isArray(messages) ? messages.length : 0,
-          };
+          });
         } catch (error) {
           console.error(`Error processing mock file ${file}:`, error);
-          return {
+          mockFiles.push({
             name: file.replace(".json", ""),
             path: file,
+            folder: subdir,
             messageCount: 0,
-          };
+          });
         }
-      });
+      }
+    }
 
     res.json(mockFiles);
   } catch (error) {
@@ -243,59 +272,86 @@ app.get("/mocks", adminAuth, (req: Request, res: Response) => {
 });
 
 // Endpoint to get mock data preview
-app.get("/mock-preview/:mockPath", adminAuth, (req: Request, res: Response) => {
-  try {
-    const mockPath = req.params.mockPath;
-
-    if (!mockPath) {
-      res.status(400).json({ error: "Missing mock path" });
-      return;
-    }
-
-    const mockFilePath = path.join(
-      __dirname,
-      "mocks/reddit/sanitizedData",
-      mockPath
-    );
-
-    if (!fs.existsSync(mockFilePath)) {
-      res.status(404).json({ error: `Mock file not found: ${mockPath}` });
-      return;
-    }
-
+app.get(
+  "/mock-preview/:folder/:mockPath",
+  adminAuth,
+  (req: Request, res: Response) => {
     try {
-      const mockDataStr = fs.readFileSync(mockFilePath, "utf8");
-      const mockData = JSON.parse(mockDataStr);
+      const { folder, mockPath } = req.params;
 
-      if (!Array.isArray(mockData)) {
-        res.status(400).json({ error: "Invalid mock data format" });
+      if (!folder || !mockPath) {
+        res.status(400).json({ error: "Missing folder or mock path" });
         return;
       }
 
-      res.json(mockData);
-    } catch (parseError) {
-      console.error("Error parsing mock data for preview:", parseError);
-      res.status(500).json({ error: "Failed to parse mock data" });
+      const mockFilePath = path.join(
+        __dirname,
+        "mocks",
+        folder,
+        "sanitizedData",
+        mockPath
+      );
+
+      if (!fs.existsSync(mockFilePath)) {
+        res
+          .status(404)
+          .json({ error: `Mock file not found: ${folder}/${mockPath}` });
+        return;
+      }
+
+      try {
+        const mockDataStr = fs.readFileSync(mockFilePath, "utf8");
+        const mockData = JSON.parse(mockDataStr);
+
+        if (!Array.isArray(mockData)) {
+          res.status(400).json({ error: "Invalid mock data format" });
+          return;
+        }
+
+        res.json(mockData);
+      } catch (parseError) {
+        console.error("Error parsing mock data for preview:", parseError);
+        res.status(500).json({ error: "Failed to parse mock data" });
+      }
+    } catch (error) {
+      console.error("Error fetching mock preview:", error);
+      res.status(500).json({ error: "Failed to fetch mock preview" });
     }
-  } catch (error) {
-    console.error("Error fetching mock preview:", error);
-    res.status(500).json({ error: "Failed to fetch mock preview" });
   }
-});
+);
 
 app.post("/seed/chat", async (req: Request, res: Response) => {
   try {
-    const input: { conversationId: string } = req.body;
+    const input: {
+      conversationId: string;
+      folder?: string;
+      mockFile?: string;
+    } = req.body;
 
     if (!input.conversationId) {
       res.status(400).json({ error: "Missing conversation ID" });
       return;
     }
 
-    const sanitizedMessage = fs.readFileSync(
-      "./src/mocks/reddit/sanitizedData/nextjs_1jiieu5.json",
-      "utf8"
+    const folder = input.folder || "reddit";
+    const mockFile = input.mockFile || "nextjs_1jiieu5.json";
+
+    const mockFilePath = path.join(
+      __dirname,
+      "mocks",
+      folder,
+      "sanitizedData",
+      mockFile
     );
+
+    if (!fs.existsSync(mockFilePath)) {
+      res
+        .status(404)
+        .json({ error: `Mock file not found: ${folder}/${mockFile}` });
+      return;
+    }
+
+    const sanitizedMessage = fs.readFileSync(mockFilePath, "utf8");
     const sanitizedMessages: MockMessage[] = JSON.parse(sanitizedMessage);
     const seedConfig: SeedConfig = {
       conversationId: input.conversationId,
