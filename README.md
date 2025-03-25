@@ -56,5 +56,3 @@ npm start
 ## Security Notes
 
 - Never commit your `.env` file or expose your client secret
-- The `/tokens` endpoint should be disabled in production
-- For production use, implement proper token encryption
