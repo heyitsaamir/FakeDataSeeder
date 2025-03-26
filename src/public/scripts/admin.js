@@ -24,6 +24,11 @@ function showAdminPanel() {
   loadTokens();
   loadMocks();
   loadConversations();
+
+  // Set up the event listener for the Refresh All button
+  document
+    .getElementById("refreshAllTokens")
+    .addEventListener("click", refreshAllTokens);
 }
 
 function showPasswordScreen() {
@@ -94,6 +99,70 @@ async function loadTokens() {
     document.getElementById(
       "tokensContainer"
     ).innerHTML = `<p class="error">Error loading tokens: ${error.message}</p>`;
+  }
+}
+
+// Function to refresh all tokens
+async function refreshAllTokens() {
+  try {
+    const refreshButton = document.getElementById("refreshAllTokens");
+    refreshButton.disabled = true;
+    refreshButton.textContent = "Refreshing...";
+
+    const response = await fetch("/tokens", {
+      headers: {
+        "Admin-Auth": localStorage.getItem(LOCAL_STORAGE_KEY),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to load tokens");
+    }
+
+    const tokens = await response.json();
+    const userIds = Object.keys(tokens);
+
+    // If no tokens, no need to continue
+    if (userIds.length === 0) {
+      refreshButton.disabled = false;
+      refreshButton.textContent = "Refresh All";
+      return;
+    }
+
+    // Create a status message element
+    const tokensContainer = document.getElementById("tokensContainer");
+    const statusElement = document.createElement("div");
+    statusElement.className = "refresh-status";
+    statusElement.textContent = "Refreshing tokens: 0/" + userIds.length;
+    tokensContainer.prepend(statusElement);
+
+    // Refresh each token one by one
+    let completedCount = 0;
+    for (const userId of userIds) {
+      try {
+        await fetch(`/auth/refresh/${userId}`, {
+          headers: {
+            "Admin-Auth": localStorage.getItem(LOCAL_STORAGE_KEY),
+          },
+        });
+        completedCount++;
+        statusElement.textContent = `Refreshing tokens: ${completedCount}/${userIds.length}`;
+      } catch (error) {
+        console.error(`Error refreshing token for user ${userId}:`, error);
+      }
+    }
+
+    // Reload the tokens display when done
+    await loadTokens();
+    refreshButton.disabled = false;
+    refreshButton.textContent = "Refresh All";
+  } catch (error) {
+    console.error("Error refreshing all tokens:", error);
+    alert(`Error refreshing all tokens: ${error.message}`);
+
+    const refreshButton = document.getElementById("refreshAllTokens");
+    refreshButton.disabled = false;
+    refreshButton.textContent = "Refresh All";
   }
 }
 

@@ -1,14 +1,47 @@
-# Microsoft Graph Token Service
+# Fake Data Seeder
 
-This service handles OAuth 2.0 authentication with Microsoft Graph API to obtain and store access tokens for users.
+This project provides a way to authenticate and seed fake data to your test tenants. The main components are:
+1. Mocks to build out your mock data
+2. A backend service to authenticate with Microsoft and seed the data
+3. A frontend for users to authenticate and store tokens
+4. An admin portal frontend.
 
-## Setup
+## Prereq
+1. Node.js
+2. npm
+3. Azure AD Tenant (Admin access)
+4. Devtunnel / ngrok
+
+## Mocks
+The src/mocks folder contains the mocks, transformers and sanitizers for the data. Currently it just works with reddit comments, but you can build your own.
+To use the reddit comments one, find any reddit thread, and extract its subreddit and thread id. Then go to https://reddit.com/r/<subreddit>/comments/<threadid>.json. Save the json in a `data` folder under the `reddit` folder. Then run `npm run mockgen` to generate the mock data.
+
+## Backend Service
+
+The backend service requires some .env variables to be set. First you will need to set up your app in Azure. Then you'll bring those values into the .env file.
+
+### Creating a public facing URL
+
+I used devtunnel to create a public facing URL. Here is my bash function that does that:
+```bash
+create_tunnel () {
+        local mytunnel=$1 
+        local port=$2 
+        devtunnel create $mytunnel
+        devtunnel port create $mytunnel -p $port
+        devtunnel access create $mytunnel -p $port --anonymous
+}
+```
+Then call it with `create_tunnel <tunnelname> 3000` to create a tunnel on port 3000.
+Run the tunnel with `devtunnel host <tunnelname>`. This will give you a public facing URL that you can use in your app registration.
+
+### Setup your app
 
 1. Register an application in the Microsoft Azure Portal:
 
    - Go to the [Azure Portal](https://portal.azure.com)
    - Navigate to "Azure Active Directory" → "App registrations" → "New registration"
-   - Name your application and set the Redirect URI to `http://localhost:3000/auth/callback`
+   - Name your application and set the Redirect URI to `https://<devtunnelurl>/auth/callback`
    - Note the Application (client) ID
 
 2. Create a client secret:
@@ -28,31 +61,12 @@ npm install
 
 # Development mode with auto-reload
 npm run dev
-
-# Build for production
-npm run build
-
-# Run in production
-npm start
 ```
 
-## API Endpoints
+## Frontend
 
-- `GET /auth/url`: Generates the Microsoft authorization URL for the user to visit
-- `GET /auth/callback`: Handles the OAuth callback from Microsoft, exchanges the code for tokens, and stores them
-- `POST /auth/refresh/:userId`: Refreshes the access token for a specific user using their refresh token
-- `GET /tokens`: (Development only) Shows all stored tokens
-- `GET /health`: Service health check endpoint
+If you go to `https://<devtunnelurl>authenticate` you will see the frontend to be able to authenticate. Click the button and it'll take you through the Microsoft login flow. Once you've authenticated, you'll be redirected back. If you look in `data/tokens` you'll see a token file. You can send this url to any user in your tenant. They are basically giving you read/write permissions in the test tenant.
 
-## How It Works
+## Admin Portal
 
-1. The client application requests an authorization URL from `/auth/url`
-2. User visits this URL and authenticates with Microsoft
-3. Microsoft redirects back to `/auth/callback` with an authorization code
-4. The service exchanges this code for access and refresh tokens
-5. Tokens are stored in a local file for future use
-6. When a token expires, the client can call `/auth/refresh/:userId` to get a new access token
-
-## Security Notes
-
-- Never commit your `.env` file or expose your client secret
+Go to `http://localhost:3000/admin` to see the admin portal. Here you can seed data and refresh tokens if they expire.
